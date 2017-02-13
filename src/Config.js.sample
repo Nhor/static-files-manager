@@ -1,0 +1,13 @@
+let Config = {};
+
+Config.name = 'static-files-uploader';
+Config.version = '0.0.0';
+Config.port = 8000;
+
+Config.database = 'database.db';
+
+Config.session = {};
+Config.session.type = 'AUTH';
+Config.session.realm = 'www.domain.com';
+
+module.exports = Config;
