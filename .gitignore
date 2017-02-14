@@ -57,3 +57,7 @@ src/Config.js
 
 # Build
 dist
+
+# Static files
+tmp
+static

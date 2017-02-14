@@ -5,6 +5,54 @@ let Validator = require('../../../utils/Validator');
 
 describe('Validator', () => {
 
+  describe('FileExtensionField', () => {
+
+    it('should return false on null', () =>
+      expect(Validator.FileExtensionField(null)).to.be.false);
+
+    it('should return false on number', () =>
+      expect(Validator.FileExtensionField(1)).to.be.false);
+
+    it('should return false on string with invalid characters', () =>
+      expect(Validator.FileExtensionField('ext^')).to.be.false);
+
+    it('should return false on too long string', () =>
+      expect(Validator.FileExtensionField('tooLongFileExtension')).to.be.false);
+
+    it('should return true on empty string', () =>
+      expect(Validator.FileExtensionField('')).to.be.true);
+
+    it('should return true on valid file extension string', () =>
+      expect(Validator.FileExtensionField('ext')).to.be.true);
+
+    it('should return true on valid string with lowercase and uppercase characters and digits', () =>
+      expect(Validator.FileExtensionField('Ext1')).to.be.true);
+  });
+
+  describe('FileNameField', () => {
+
+    it('should return false on null', () =>
+      expect(Validator.FileNameField(null)).to.be.false);
+
+    it('should return false on number', () =>
+      expect(Validator.FileNameField(1)).to.be.false);
+
+    it('should return false on empty string', () =>
+      expect(Validator.FileNameField('')).to.be.false);
+
+    it('should return false on string with invalid characters', () =>
+      expect(Validator.FileNameField('filename^')).to.be.false);
+
+    it('should return false on too long string', () =>
+      expect(Validator.FileNameField(_.times(65, _.constant(0)).join(''))).to.be.false);
+
+    it('should return true on valid file name string', () =>
+      expect(Validator.FileNameField('filename')).to.be.true);
+
+    it('should return true on valid string with lowercase and uppercase characters and digits', () =>
+      expect(Validator.FileNameField('FileName1')).to.be.true);
+  });
+
   describe('PasswordField', () => {
 
     it('should return false on null', () =>
@@ -30,6 +78,39 @@ describe('Validator', () => {
 
     it('should return true on valid password string with special characters', () =>
       expect(Validator.PasswordField('password123!@#')).to.be.true);
+  });
+
+  describe('PathField', () => {
+
+    it('should return false on null', () =>
+      expect(Validator.PathField(null)).to.be.false);
+
+    it('should return false on number', () =>
+      expect(Validator.PathField(1)).to.be.false);
+
+    it('should return false on string with invalid characters', () =>
+      expect(Validator.PathField('path^')).to.be.false);
+
+    it('should return false on string with invalid characters', () =>
+      expect(Validator.PathField('path/to/file^')).to.be.false);
+
+    it('should return false on string with duplicate "/"', () =>
+      expect(Validator.PathField('path//to/file')).to.be.false);
+
+    it('should return false on string with many "/" in a row', () =>
+      expect(Validator.PathField('path///to////file')).to.be.false);
+
+    it('should return false on too long string', () =>
+      expect(Validator.PathField(_.times(129, _.constant(0)).join(''))).to.be.false);
+
+    it('should return true on empty string', () =>
+      expect(Validator.PathField('')).to.be.true);
+
+    it('should return true on valid path string', () =>
+      expect(Validator.PathField('path')).to.be.true);
+
+    it('should return true on valid string with lowercase and uppercase characters and digits', () =>
+      expect(Validator.PathField('Path1/To2/File3')).to.be.true);
   });
 
   describe('UsernameField', () => {

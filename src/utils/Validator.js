@@ -1,7 +1,36 @@
-let _ = require('lodash');
-let Error = require('./Error');
+const fs = require('fs');
+const _ = require('lodash');
+const Error = require('./Error');
 
 class Validator {
+
+  /**
+   * Check if value is valid file.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static FileField(val) {
+    let file = _.get(val, _.first(_.keys(val)));
+    return _.isObject(file) && fs.statSync(file.path).isFile();
+  }
+
+  /**
+   * Check if value is valid file extension.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static FileExtensionField(val) {
+    return _.isString(val) && /^[0-9a-zA-Z]{0,16}$/.test(val);
+  }
+
+  /**
+   * Check if value is valid file name.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static FileNameField(val) {
+    return _.isString(val) && /^[0-9a-zA-Z]{1,64}$/.test(val);
+  }
 
   /**
    * Check if value is valid password.
@@ -9,7 +38,16 @@ class Validator {
    * @return {Boolean} `true` if validation was successful, `false` otherwise.
    */
   static PasswordField(val) {
-    return _.isString(val) && /^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9$@!%*#?&]{6,32}$/.test(val);
+    return _.isString(val) && /^(?=.*[a-zA-Z])(?=.*[0-9])[0-9a-zA-Z$@!%*#?&]{6,32}$/.test(val);
+  }
+
+  /**
+   * Check if value is valid path.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static PathField(val) {
+    return _.isString(val) && /^(?!.*(\/)\1+)[0-9a-zA-Z/]{0,128}$/.test(val);
   }
 
   /**
@@ -18,7 +56,7 @@ class Validator {
    * @return {Boolean} `true` if validation was successful, `false` otherwise.
    */
   static UsernameField(val) {
-    return _.isString(val) && /^(?=.*[A-Za-z])[0-9a-zA-Z-_]{2,16}$/.test(val);
+    return _.isString(val) && /^(?=.*[a-zA-Z])[0-9a-zA-Z-_]{2,16}$/.test(val);
   }
 
   /**

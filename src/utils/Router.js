@@ -1,7 +1,9 @@
-let _ = require('lodash');
-let express = require('express');
-let bodyParser = require('body-parser');
-let Logger = require('./Logger');
+const path = require('path');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const multiparty = require('multiparty');
+const Logger = require('./Logger');
 
 class Router {
 
@@ -10,7 +12,7 @@ class Router {
    */
   constructor() {
     this._router = express.Router();
-    this._jsonMiddleware = bodyParser.json();
+    this.jsonMiddleware = bodyParser.json();
   }
 
   /**
@@ -22,11 +24,11 @@ class Router {
    *                             next middlewares and handler, defaults to `{}`.
    * @param {Object} [middleware] - Request middleware, defaults to JSON parser.
    */
-  addRoute(method, path, handler, context = {}, middleware = this._jsonMiddleware) {
+  addRoute(method, path, handler, context = {}, middleware = 'json') {
     this._router[method.toLowerCase()](
       path,
       this._createBindContextMiddleware(context),
-      middleware,
+      this[`${middleware}Middleware`],
       this._incomingRequestLogMiddleware,
       handler,
       this._outgoingResponseLogMiddleware,
@@ -40,6 +42,21 @@ class Router {
    */
   getRouter() {
     return this._router;
+  }
+
+  /**
+   * Multipart middleware.
+   * @param {express.Request} req - Express request object.
+   * @param {express.Response} res - Express response object.
+   * @param {Function} next - Express next function.
+   */
+  multipartMiddleware(req, res, next) {
+    let form = new multiparty.Form({uploadDir: path.resolve(__dirname, '..', '..', 'tmp')});
+    form.parse(req, (err, fields, files) => {
+      if (err) Logger.error(err.message);
+      req.body = _.merge({files: _.mapValues(files, _.first)}, _.mapValues(fields, _.first));
+      next();
+    });
   }
 
   /**

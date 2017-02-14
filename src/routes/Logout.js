@@ -1,8 +1,8 @@
-let Error = require('../utils/Error');
-let Logger = require('../utils/Logger');
-let Validator = require('../utils/Validator');
-let Route = require('../utils/Route');
-let Session = require('../models/Session');
+const Error = require('../utils/Error');
+const Logger = require('../utils/Logger');
+const Validator = require('../utils/Validator');
+const Route = require('../utils/Route');
+const Session = require('../models/Session');
 
 class Logout {
 
@@ -20,7 +20,7 @@ class Logout {
         Route.prepareResponse(res, next, status, body);
       })
       .catch(err => {
-        if (err.code) {
+        if (err.isCustom) {
           status = 403;
           body = {success: false, err: [err.code]};
         } else {

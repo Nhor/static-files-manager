@@ -1,6 +1,6 @@
-let _ = require('lodash');
-let bcrypt = require('bcrypt');
-let Error = require('../utils/Error');
+const _ = require('lodash');
+const bcrypt = require('bcrypt');
+const Error = require('../utils/Error');
 
 class User {
 

@@ -1,6 +1,6 @@
-let path = require('path');
-let _ = require('lodash');
-let sqlite3 = require('sqlite3');
+const path = require('path');
+const _ = require('lodash');
+const sqlite3 = require('sqlite3');
 
 class Database {
 

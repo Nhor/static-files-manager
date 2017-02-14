@@ -1,7 +1,8 @@
-let fs = require('fs');
-let moment = require('moment');
+const fs = require('fs');
+const path = require('path');
+const moment = require('moment');
 
-try { fs.mkdirSync(`${__dirname}/../logs`); }
+try { fs.mkdirSync(path.resolve(__dirname, '..', '..', 'logs')); }
 catch (err) { if (err.code !== 'EEXIST') throw err; }
 
 class Logger {

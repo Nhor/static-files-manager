@@ -1,6 +1,6 @@
-let _ = require('lodash');
-let uuid = require('uuid');
-let Error = require('../utils/Error');
+const _ = require('lodash');
+const uuid = require('uuid');
+const Error = require('../utils/Error');
 
 class Session {
 
