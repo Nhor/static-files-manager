@@ -1,6 +1,6 @@
-let _ = require('lodash');
-let expect = require('chai').expect;
-let Error = require('../../../utils/Error');
+const _ = require('lodash');
+const expect = require('chai').expect;
+const Error = require('../../../utils/Error');
 
 describe('Error', () => {
 

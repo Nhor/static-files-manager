@@ -36,7 +36,7 @@ class Login {
         Route.prepareResponse(res, next, status, body);
       })
       .catch(err => {
-        if (err.isCustom) {
+        if (_.get(err, 'isCustom')) {
           status = 401;
           body = {success: false, err: [err.code]};
         } else {

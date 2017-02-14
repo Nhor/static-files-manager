@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Error = require('../utils/Error');
 const Logger = require('../utils/Logger');
 const Validator = require('../utils/Validator');
@@ -20,7 +21,7 @@ class Logout {
         Route.prepareResponse(res, next, status, body);
       })
       .catch(err => {
-        if (err.isCustom) {
+        if (_.get(err, 'isCustom')) {
           status = 403;
           body = {success: false, err: [err.code]};
         } else {

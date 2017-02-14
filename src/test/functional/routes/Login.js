@@ -1,9 +1,9 @@
-let expect = require('chai').expect;
-let request = require('request');
-let Config = require('../../../Config');
-let Error = require('../../../utils/Error');
-let Database = require('../../../utils/Database');
-let User = require('../../../models/User');
+const expect = require('chai').expect;
+const request = require('request');
+const Config = require('../../../Config');
+const Error = require('../../../utils/Error');
+const Database = require('../../../utils/Database');
+const User = require('../../../models/User');
 
 describe('Login', () => {
 

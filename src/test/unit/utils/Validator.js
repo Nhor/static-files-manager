@@ -1,7 +1,7 @@
-let _ = require('lodash');
-let expect = require('chai').expect;
-let Error = require('../../../utils/Error');
-let Validator = require('../../../utils/Validator');
+const _ = require('lodash');
+const expect = require('chai').expect;
+const Error = require('../../../utils/Error');
+const Validator = require('../../../utils/Validator');
 
 describe('Validator', () => {
 

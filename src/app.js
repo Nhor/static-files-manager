@@ -14,7 +14,7 @@ let router = new Router();
 
 router.addRoute('POST', '/login',  Login.POST,  {database: database, sessionProps: Config.session});
 router.addRoute('POST', '/logout', Logout.POST, {database: database});
-router.addRoute('POST', '/upload', Upload.POST, {}, 'multipart');
+router.addRoute('POST', '/upload', Upload.POST, {database: database}, 'multipart');
 
 server.addRouter('/', router);
 

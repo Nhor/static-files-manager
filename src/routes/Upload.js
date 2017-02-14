@@ -4,6 +4,7 @@ const Logger = require('../utils/Logger');
 const Validator = require('../utils/Validator');
 const File = require('../utils/File');
 const Route = require('../utils/Route');
+const Session = require('../models/Session');
 
 class Upload {
 
@@ -30,8 +31,9 @@ class Upload {
     let ext = req.body.ext;
     let file = _.get(req.body.files, _.first(_.keys(req.body.files)));
 
-    File
-      .create(file.path, path, filename, ext)
+    return Session
+      .getById(context.database, req.headers['session-id'])
+      .then(() => File.create(file.path, path, filename, ext))
       .then(() => {
         status = 200;
         body = {success: true};
@@ -39,7 +41,8 @@ class Upload {
       })
       .catch(err => {
         if (_.get(err, 'isCustom')) {
-          status = 400;
+          if (err.code === Error.Code.SESSION_NOT_FOUND) status = 403;
+          else status = 400;
           body = {success: false, err: [err.code]};
         } else {
           status = 500;
