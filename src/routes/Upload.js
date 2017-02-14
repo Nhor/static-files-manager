@@ -40,16 +40,22 @@ class Upload {
         Route.prepareResponse(res, next, status, body);
       })
       .catch(err => {
-        if (_.get(err, 'isCustom')) {
-          if (err.code === Error.Code.SESSION_NOT_FOUND) status = 403;
-          else status = 400;
-          body = {success: false, err: [err.code]};
-        } else {
-          status = 500;
-          body = {success: false, err: [Error.Code.UNKNOWN]};
-          Logger.error(err && err.message);
-        }
-        Route.prepareResponse(res, next, status, body)
+        return File
+          .remove(file.path)
+          .then(() => {})
+          .catch(() => {})
+          .then(() => {
+            if (_.get(err, 'isCustom')) {
+              if (err.code === Error.Code.SESSION_NOT_FOUND) status = 403;
+              else status = 400;
+              body = {success: false, err: [err.code]};
+            } else {
+              status = 500;
+              body = {success: false, err: [Error.Code.UNKNOWN]};
+              Logger.error(err && err.message);
+            }
+            Route.prepareResponse(res, next, status, body);
+          });
       });
   }
 }

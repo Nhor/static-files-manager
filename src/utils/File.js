@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const mkdirp = require('mkdirp');
+const rimraf = require('rimraf');
 const Error = require('./Error');
 
 try { fs.mkdirSync(path.resolve(__dirname, '..', '..', 'tmp')); }
@@ -30,6 +31,21 @@ class File {
       })
       .then(stats => stats ? undefined : this._createDirectory(paths.directoryAbsolute))
       .then(() => this._moveFile(pathToSourceFile, paths.absolute));
+  }
+
+  /**
+   * Remove file or directory and its content at given path.
+   * @param pathname
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   */
+  static remove(pathname) {
+    return this
+      ._getStats(pathname)
+      .then(stats =>{
+        if (!stats) throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
+        return this._removeFile(pathname);
+      });
   }
 
   /**
@@ -97,6 +113,18 @@ class File {
   static _moveFile(pathToSource, pathToDestination) {
     return new Promise((resolve, reject) =>
       fs.rename(pathToSource, pathToDestination, err => err ? reject(err) : resolve()));
+  }
+
+  /**
+   * Remove file or directory and its content at given path.
+   * @param {String} pathname - Path to the file or directory.
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   * @private
+   */
+  static _removeFile(pathname) {
+    return new Promise((resolve, reject) =>
+      rimraf(pathname, err => err ? reject(err) : resolve()));
   }
 }
 

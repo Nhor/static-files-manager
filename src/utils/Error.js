@@ -53,8 +53,9 @@ let Code = {
   INVALID_FILES_FORMAT: 6,
   USER_NOT_FOUND: 7,
   SESSION_NOT_FOUND: 8,
-  INVALID_PASSWORD: 9,
-  FILE_EXISTS: 10
+  FILE_NOT_FOUND: 9,
+  INVALID_PASSWORD: 10,
+  FILE_EXISTS: 11
 };
 
 module.exports.InvalidFormat = InvalidFormat;
