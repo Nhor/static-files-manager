@@ -1,6 +1,6 @@
 let Config = {};
 
-Config.name = 'static-files-uploader';
+Config.name = 'static-files-manager';
 Config.version = '0.0.0';
 Config.port = 8000;
 

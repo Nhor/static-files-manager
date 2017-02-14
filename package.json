@@ -1,5 +1,5 @@
 {
-  "name": "static-files-uploader",
+  "name": "static-files-manager",
   "version": "0.0.0",
   "description": "Node.js application for uploading static files",
   "main": "./dist/app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Nhor/static-files-uploader.git"
+    "url": "git+https://github.com/Nhor/static-files-manager.git"
   },
   "author": "Norbert Mieczkowski",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Nhor/static-files-uploader/issues"
+    "url": "https://github.com/Nhor/static-files-manager/issues"
   },
-  "homepage": "https://github.com/Nhor/static-files-uploader#readme",
+  "homepage": "https://github.com/Nhor/static-files-manager#readme",
   "dependencies": {
     "express": "^4.14.0",
     "body-parser": "^1.16.0",

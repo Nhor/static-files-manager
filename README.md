@@ -1,8 +1,8 @@
-static-files-uploader
-=====================
+static-files-manager
+====================
 
 ## Descprition
-Node.js application for uploading static files
+Node.js application for managing static files
 
 ## Prerequisites
 * `Node.js >= 7.4.0`

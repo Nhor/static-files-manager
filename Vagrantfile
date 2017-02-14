@@ -3,7 +3,7 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-16.10"
-  config.vm.synced_folder ".", "/home/vagrant/static-files-uploader"
+  config.vm.synced_folder ".", "/home/vagrant/static-files-manager"
   config.vm.network "forwarded_port", guest: 8000, host: 8000
 
   config.vm.provision "shell", inline: <<-SHELL
@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
     sudo apt-get install -y curl
     curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
     sudo apt-get install -y sqlite3 nodejs build-essential g++ gyp
-    touch /home/vagrant/static-files-uploader/database.db
-    /home/vagrant/static-files-uploader/migrations/migrate.sh
+    touch /home/vagrant/static-files-manager/database.db
+    /home/vagrant/static-files-manager/migrations/migrate.sh
   SHELL
 end
