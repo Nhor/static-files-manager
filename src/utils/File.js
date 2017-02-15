@@ -20,7 +20,7 @@ class File {
    * @param {String} filename - File name.
    * @param {String} ext - File extension (can be '').
    */
-  static create(pathToSourceFile, pathname, filename, ext) {
+  static createFile(pathToSourceFile, pathname, filename, ext) {
     let paths = this._generateAbsoluteAndRelativePath(pathname, filename, ext);
 
     return this
@@ -30,21 +30,32 @@ class File {
         return this._getStats(paths.directoryAbsolute);
       })
       .then(stats => stats ? undefined : this._createDirectory(paths.directoryAbsolute))
-      .then(() => this._moveFile(pathToSourceFile, paths.absolute));
+      .then(() => this._move(pathToSourceFile, paths.absolute));
   }
 
   /**
-   * Remove file or directory and its content at given path.
-   * @param pathname
+   * Remove file or directory and all its content at given path relative to static.
+   * @param {String} pathname - Path to file or directory relative to static.
    * @return {Promise} Resolved promise on success,
    *                   rejected promise with error on failure.
    */
-  static remove(pathname) {
+  static removeAtRelativePath(pathname) {
+    let absolutePath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathname, '/'));
+    return this.removeAtAbsolutePath(absolutePath);
+  }
+
+  /**
+   * Remove file or directory and all its content at given absolute path.
+   * @param {String} pathname - Absolute path to file or directory.
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   */
+  static removeAtAbsolutePath(pathname) {
     return this
       ._getStats(pathname)
       .then(stats =>{
         if (!stats) throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
-        return this._removeFile(pathname);
+        return this._remove(pathname);
       });
   }
 
@@ -110,7 +121,7 @@ class File {
    *                   rejected promise with error on failure.
    * @private
    */
-  static _moveFile(pathToSource, pathToDestination) {
+  static _move(pathToSource, pathToDestination) {
     return new Promise((resolve, reject) =>
       fs.rename(pathToSource, pathToDestination, err => err ? reject(err) : resolve()));
   }
@@ -122,7 +133,7 @@ class File {
    *                   rejected promise with error on failure.
    * @private
    */
-  static _removeFile(pathname) {
+  static _remove(pathname) {
     return new Promise((resolve, reject) =>
       rimraf(pathname, err => err ? reject(err) : resolve()));
   }

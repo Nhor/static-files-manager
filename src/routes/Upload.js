@@ -23,7 +23,7 @@ class Upload {
     if (!validation.success) {
       status = 400;
       body = {success: validation.success, err: _.map(validation.err, 'code')};
-      Route.prepareResponse(res, next, status, body);
+      return Route.prepareResponse(res, next, status, body);
     }
 
     let path = req.body.path;
@@ -33,7 +33,7 @@ class Upload {
 
     return Session
       .getById(context.database, req.headers['session-id'])
-      .then(() => File.create(file.path, path, filename, ext))
+      .then(() => File.createFile(file.path, path, filename, ext))
       .then(() => {
         status = 200;
         body = {success: true};
@@ -41,7 +41,7 @@ class Upload {
       })
       .catch(err => {
         return File
-          .remove(file.path)
+          .removeAtAbsolutePath(file.path)
           .then(() => {})
           .catch(() => {})
           .then(() => {

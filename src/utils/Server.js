@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 
 class Server {
@@ -17,11 +18,21 @@ class Server {
 
   /**
    * Add router.
-   * @param {String} path - Base path for all routes present in the router.
+   * @param {String} baseUrl - Base url for all routes present in the router.
    * @param {Router} router - Router object.
    */
-  addRouter(path, router) {
-    this._server.use(path, router.getRouter());
+  addRouter(baseUrl, router) {
+    this._server.use(baseUrl, router.getRouter());
+  }
+
+  /**
+   * Add static files route.
+   * @param {String} baseUrl - Base url for static files in `pathname` directory.
+   * @param {String} pathname - Path with directory relative to application root.
+   */
+  addStatic(baseUrl, pathname) {
+    let resolvedPath = path.resolve(__dirname, '..', '..', pathname);
+    this._server.use(baseUrl, express.static(resolvedPath));
   }
 
   /**

@@ -2,20 +2,19 @@ const _ = require('lodash');
 const Error = require('../utils/Error');
 const Logger = require('../utils/Logger');
 const Validator = require('../utils/Validator');
+const File = require('../utils/File');
 const Route = require('../utils/Route');
-const User = require('../models/User');
 const Session = require('../models/Session');
 
-class Login {
+class Remove {
 
-  static POST(req, res, next) {
+  static DELETE(req, res, next) {
     let context = res.locals.context;
     let status;
     let body;
 
     let validation = Validator.validate(req.body, {
-      username: Validator.UsernameField,
-      password: Validator.PasswordField
+      path: Validator.DirectoryOrFilePathRelativeToStaticField
     });
 
     if (!validation.success) {
@@ -24,29 +23,29 @@ class Login {
       return Route.prepareResponse(res, next, status, body);
     }
 
-    let username = req.body.username;
-    let password = req.body.password;
+    let path = req.body.path;
 
-    User
-      .login(context.database, username, password)
-      .then(userId => Session.getOrCreate(context.database, context.sessionProps, userId))
-      .then(session => {
+    return Session
+      .getById(context.database, req.headers['session-id'])
+      .then(() => File.removeAtRelativePath(path))
+      .then(() => {
         status = 200;
-        body = {success: true, sessionId: session.id};
+        body = {success: true};
         Route.prepareResponse(res, next, status, body);
       })
       .catch(err => {
         if (_.get(err, 'isCustom')) {
-          status = 401;
+          if (err.code === Error.Code.SESSION_NOT_FOUND) status = 403;
+          else status = 400;
           body = {success: false, err: [err.code]};
         } else {
           status = 500;
           body = {success: false, err: [Error.Code.UNKNOWN]};
-          Logger.error(err.message);
+          Logger.error(err && err.message);
         }
-        Route.prepareResponse(res, next, status, body)
+        Route.prepareResponse(res, next, status, body);
       });
   }
 }
 
-module.exports = Login;
+module.exports = Remove;

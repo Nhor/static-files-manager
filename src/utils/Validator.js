@@ -1,8 +1,21 @@
 const fs = require('fs');
+const path = require('path');
 const _ = require('lodash');
 const Error = require('./Error');
 
 class Validator {
+
+  /**
+   * Check if value is valid path for directory or file relative to static.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static DirectoryOrFilePathRelativeToStaticField(val) {
+    let staticPath = path.resolve(__dirname, '..', '..', 'static');
+    let absolutePath = path.resolve(staticPath, _.trim(val, '/'));
+    let pathRelativeToStatic = path.relative(staticPath, absolutePath);
+    return !_.isEmpty(pathRelativeToStatic) && !_.startsWith(pathRelativeToStatic, '..');
+  }
 
   /**
    * Check if value is valid file.
@@ -29,7 +42,7 @@ class Validator {
    * @return {Boolean} `true` if validation was successful, `false` otherwise.
    */
   static FileNameField(val) {
-    return _.isString(val) && /^[0-9a-zA-Z]{1,64}$/.test(val);
+    return _.isString(val) && /^[0-9a-zA-Z-_ ]{1,64}$/.test(val);
   }
 
   /**
@@ -47,7 +60,7 @@ class Validator {
    * @return {Boolean} `true` if validation was successful, `false` otherwise.
    */
   static PathField(val) {
-    return _.isString(val) && /^(?!.*(\/)\1+)[0-9a-zA-Z/]{0,128}$/.test(val);
+    return _.isString(val) && /^(?!.*(\/)\1+)[0-9a-zA-Z/\-_ ]{0,128}$/.test(val);
   }
 
   /**

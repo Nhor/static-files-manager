@@ -42,7 +42,7 @@ describe('Logout', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/logout`
+        url: `http://localhost:${Config.port}/api/logout`
       };
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(403);
@@ -55,7 +55,7 @@ describe('Logout', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/logout`,
+        url: `http://localhost:${Config.port}/api/logout`,
         headers: {
           'Session-Id': invalidSessionId
         }
@@ -71,7 +71,7 @@ describe('Logout', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/logout`,
+        url: `http://localhost:${Config.port}/api/logout`,
         headers: {
           'Session-Id': sessionId
         }

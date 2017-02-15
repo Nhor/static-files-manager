@@ -49,8 +49,8 @@ describe('Validator', () => {
     it('should return true on valid file name string', () =>
       expect(Validator.FileNameField('filename')).to.be.true);
 
-    it('should return true on valid string with lowercase and uppercase characters and digits', () =>
-      expect(Validator.FileNameField('FileName1')).to.be.true);
+    it('should return true on valid string with extra characters', () =>
+      expect(Validator.FileNameField('My-File_Name 1')).to.be.true);
   });
 
   describe('PasswordField', () => {
@@ -109,8 +109,8 @@ describe('Validator', () => {
     it('should return true on valid path string', () =>
       expect(Validator.PathField('path')).to.be.true);
 
-    it('should return true on valid string with lowercase and uppercase characters and digits', () =>
-      expect(Validator.PathField('Path1/To2/File3')).to.be.true);
+    it('should return true on valid string with extra characters', () =>
+      expect(Validator.PathField('Path-1/To_2/File 3')).to.be.true);
   });
 
   describe('UsernameField', () => {

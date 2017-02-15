@@ -34,7 +34,7 @@ describe('Login', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/login`
+        url: `http://localhost:${Config.port}/api/login`
       };
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(400);
@@ -50,7 +50,7 @@ describe('Login', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/login`,
+        url: `http://localhost:${Config.port}/api/login`,
         body: {
           username: invalidUsername,
           password: password
@@ -67,7 +67,7 @@ describe('Login', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/login`,
+        url: `http://localhost:${Config.port}/api/login`,
         body: {
           username: username,
           password: invalidPassword
@@ -84,7 +84,7 @@ describe('Login', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/login`,
+        url: `http://localhost:${Config.port}/api/login`,
         body: {
           username: username,
           password: password
