@@ -14,13 +14,15 @@ catch (err) { if (err.code !== 'EEXIST') throw err; }
 class File {
 
   /**
-   * Create file under given path with specified filename and extension.
+   * Upload file under given path with specified filename and extension.
    * @param {String} pathToSourceFile - Path to temporarily created source file.
    * @param {String} pathname - Path to file (can be '').
    * @param {String} filename - File name.
    * @param {String} ext - File extension (can be '').
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
    */
-  static createFile(pathToSourceFile, pathname, filename, ext) {
+  static uploadFile(pathToSourceFile, pathname, filename, ext) {
     let paths = this._generateAbsoluteAndRelativePath(pathname, filename, ext);
 
     return this
@@ -31,6 +33,22 @@ class File {
       })
       .then(stats => stats ? undefined : this._createDirectory(paths.directoryAbsolute))
       .then(() => this._move(pathToSourceFile, paths.absolute));
+  }
+
+  /**
+   * Create a new directory with making sure that it doesn't exist yet.
+   * @param {String} pathname - Path to new directory.
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   */
+  static createDirectory(pathname) {
+    let absolutePath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathname, '/'));
+    return this
+      ._getStats(absolutePath)
+      .then(stats => {
+        if (stats) throw new Error.RecordExists(Error.Code.DIRECTORY_EXISTS);
+        return this._createDirectory(absolutePath);
+      });
   }
 
   /**
@@ -109,6 +127,7 @@ class File {
    * @private
    */
   static _createDirectory(pathname) {
+    console.log(pathname);
     return new Promise((resolve, reject) =>
       mkdirp(pathname, err => err ? reject(err) : resolve()));
   }

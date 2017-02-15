@@ -9,7 +9,7 @@ const File = require('../../../utils/File');
 const User = require('../../../models/User');
 const Session = require('../../../models/Session');
 
-describe('Upload', () => {
+describe('Create', () => {
 
   describe('POST', () => {
 
@@ -17,22 +17,14 @@ describe('Upload', () => {
     let userId;
     let sessionId;
     let invalidSessionId;
-    let pathToFile;
-    let invalidPathToFile;
-    let filename;
-    let pathname;
-    let ext;
+    let pathToDirectory;
 
     before('set up global properties and create test user and session', () => {
       database = new Database(Config.database);
       let username = 'username';
       let password = 'password123';
       invalidSessionId = 'invalidSessionId';
-      pathToFile = path.resolve(__dirname, '..', '..', 'fixtures', 'file.txt');
-      invalidPathToFile = path.resolve(__dirname, '..', '..', 'fixtures', 'invalidFile.txt');
-      filename = 'file';
-      pathname = 'path/to';
-      ext = 'txt';
+      pathToDirectory = path.join('path', 'to', 'directory');
       return User
         .create(database, username, password)
         .then(() => User.getByUsername(database, username))
@@ -51,21 +43,15 @@ describe('Upload', () => {
         .then(() => File.removeAtRelativePath('path'));
     });
 
-    it('should respond with validation errors for empty form data', done => {
+    it('should respond with validation errors for empty body', done => {
       let options = {
+        json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {}
+        url: `http://localhost:${Config.port}/api/create`
       };
       request(options, (err, res, body) => {
-        body = JSON.parse(body);
         expect(res.statusCode).to.equal(400);
-        expect(body.err).to.have.all.members([
-          Error.Code.INVALID_FILES_FORMAT,
-          Error.Code.INVALID_PATH_FORMAT,
-          Error.Code.INVALID_FILENAME_FORMAT,
-          Error.Code.INVALID_EXT_FORMAT
-        ]);
+        expect(body.err).to.have.all.members([Error.Code.INVALID_PATH_FORMAT]);
         done();
       });
     });
@@ -74,12 +60,9 @@ describe('Upload', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {
-          file: fs.createReadStream(pathToFile),
-          path: pathname,
-          filename: filename,
-          ext: ext
+        url: `http://localhost:${Config.port}/api/create`,
+        body: {
+          path: pathToDirectory
         }
       };
       request(options, (err, res, body) => {
@@ -93,34 +76,9 @@ describe('Upload', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {
-          file: fs.createReadStream(pathToFile),
-          path: pathname,
-          filename: filename,
-          ext: ext
-        },
-        headers: {
-          'Session-Id': invalidSessionId
-        }
-      };
-      request(options, (err, res, body) => {
-        expect(res.statusCode).to.equal(403);
-        expect(body.err).to.have.all.members([Error.Code.SESSION_NOT_FOUND]);
-        done();
-      });
-    });
-
-    it('should respond with SESSION_NOT_FOUND error for invalid Session-Id header', done => {
-      let options = {
-        json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {
-          file: fs.createReadStream(pathToFile),
-          path: pathname,
-          filename: filename,
-          ext: ext
+        url: `http://localhost:${Config.port}/api/create`,
+        body: {
+          path: pathToDirectory
         },
         headers: {
           'Session-Id': invalidSessionId
@@ -137,12 +95,9 @@ describe('Upload', () => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {
-          file: fs.createReadStream(pathToFile),
-          path: pathname,
-          filename: filename,
-          ext: ext
+        url: `http://localhost:${Config.port}/api/create`,
+        body: {
+          path: pathToDirectory
         },
         headers: {
           'Session-Id': sessionId
@@ -154,16 +109,13 @@ describe('Upload', () => {
       });
     });
 
-    it('should respond with FILE_EXISTS error for the same data', done => {
+    it('should respond with DIRECTORY_EXISTS error for the same data', done => {
       let options = {
         json: true,
         method: 'POST',
-        url: `http://localhost:${Config.port}/api/upload`,
-        formData: {
-          file: fs.createReadStream(pathToFile),
-          path: pathname,
-          filename: filename,
-          ext: ext
+        url: `http://localhost:${Config.port}/api/create`,
+        body: {
+          path: pathToDirectory
         },
         headers: {
           'Session-Id': sessionId
@@ -171,7 +123,7 @@ describe('Upload', () => {
       };
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(400);
-        expect(body.err).to.have.all.members([Error.Code.FILE_EXISTS]);
+        expect(body.err).to.have.all.members([Error.Code.DIRECTORY_EXISTS]);
         done();
       });
     });

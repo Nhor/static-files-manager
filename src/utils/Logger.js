@@ -49,9 +49,9 @@ class Logger {
   static _print(type, text) {
     let dateTime = this._getDateTime();
     let log = `${dateTime}: ${type.toUpperCase()}: ${text}`;
-    let path = `${__dirname}/../logs/${dateTime.substr(0, 10)}.log`;
+    let file = path.resolve(__dirname, '..', '..', 'logs', `${dateTime.substr(0, 10)}.log`);
     console[type.toLowerCase()](log);
-    fs.appendFile(path, `${log}\n`, {encoding: 'utf8'}, () => {});
+    fs.appendFile(file, `${log}\n`, {encoding: 'utf8'}, () => {});
   }
 }
 

@@ -33,7 +33,7 @@ class Upload {
 
     return Session
       .getById(context.database, req.headers['session-id'])
-      .then(() => File.createFile(file.path, path, filename, ext))
+      .then(() => File.uploadFile(file.path, path, filename, ext))
       .then(() => {
         status = 200;
         body = {success: true};
