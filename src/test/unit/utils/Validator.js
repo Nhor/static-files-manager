@@ -1,9 +1,86 @@
+const fs = require('fs');
+const path = require('path');
 const _ = require('lodash');
 const expect = require('chai').expect;
 const Error = require('../../../utils/Error');
 const Validator = require('../../../utils/Validator');
 
 describe('Validator', () => {
+
+  describe('DirectoryOrFilePathRelativeToStaticField', () => {
+
+    it('should return false on null', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField(null)).to.be.false);
+
+    it('should return false on number', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField(1)).to.be.false);
+
+    it('should return false on object', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField({})).to.be.false);
+
+    it('should return false on empty string', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('')).to.be.false);
+
+    it('should return false on string with static directory itself', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('.')).to.be.false);
+
+    it('should return false on string resolving to static directory itself', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('directory/..')).to.be.false);
+
+    it('should return false on string out of static directory', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('..')).to.be.false);
+
+    it('should return false on string resolving to out of static directory', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('directory/../..')).to.be.false);
+
+    it('should return false on string with file out of static directory', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('../file.txt')).to.be.false);
+
+    it('should return true on valid string with directory', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('directory')).to.be.true);
+
+    it('should return true on valid string with file', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('file.txt')).to.be.true);
+
+    it('should return true on valid string with file in directory', () =>
+      expect(Validator.DirectoryOrFilePathRelativeToStaticField('directory/file.txt')).to.be.true);
+  });
+
+  describe('FileField', () => {
+
+    let pathToFile;
+    let invalidPathToFile;
+
+    before('create file', done => {
+      pathToFile = path.resolve(__dirname, 'file.txt');
+      invalidPathToFile = path.resolve(__dirname, 'invalidFile.txt');
+      fs.writeFile(pathToFile, 'file\n', err => done());
+    });
+
+    after('delete file', done =>
+      fs.unlink(pathToFile, err => done()));
+
+    it('should return false on null', () =>
+      expect(Validator.FileField(null)).to.be.false);
+
+    it('should return false on number', () =>
+      expect(Validator.FileField(1)).to.be.false);
+
+    it('should return false on string', () =>
+      expect(Validator.FileField('file')).to.be.false);
+
+    it('should return false on empty object', () =>
+      expect(Validator.FileField({})).to.be.false);
+
+    it('should return false on object without path', () =>
+      expect(Validator.FileField({file: {}})).to.be.false);
+
+    it('should return false on object with invalid path', () =>
+      expect(Validator.FileField({file: {path: invalidPathToFile}})).to.be.false);
+
+    it('should return true on valid file object', () =>
+      expect(Validator.FileField({file: {path: pathToFile}})).to.be.true);
+  });
 
   describe('FileExtensionField', () => {
 
@@ -12,6 +89,9 @@ describe('Validator', () => {
 
     it('should return false on number', () =>
       expect(Validator.FileExtensionField(1)).to.be.false);
+
+    it('should return false on object', () =>
+      expect(Validator.FileExtensionField({})).to.be.false);
 
     it('should return false on string with invalid characters', () =>
       expect(Validator.FileExtensionField('ext^')).to.be.false);
@@ -37,6 +117,9 @@ describe('Validator', () => {
     it('should return false on number', () =>
       expect(Validator.FileNameField(1)).to.be.false);
 
+    it('should return false on object', () =>
+      expect(Validator.FileNameField({})).to.be.false);
+
     it('should return false on empty string', () =>
       expect(Validator.FileNameField('')).to.be.false);
 
@@ -60,6 +143,9 @@ describe('Validator', () => {
 
     it('should return false on number', () =>
       expect(Validator.PasswordField(1)).to.be.false);
+
+    it('should return false on object', () =>
+      expect(Validator.PasswordField({})).to.be.false);
 
     it('should return false on empty string', () =>
       expect(Validator.PasswordField('')).to.be.false);
@@ -87,6 +173,9 @@ describe('Validator', () => {
 
     it('should return false on number', () =>
       expect(Validator.PathField(1)).to.be.false);
+
+    it('should return false on object', () =>
+      expect(Validator.PathField({})).to.be.false);
 
     it('should return false on string with invalid characters', () =>
       expect(Validator.PathField('path^')).to.be.false);
@@ -120,6 +209,9 @@ describe('Validator', () => {
 
     it('should return false on number', () =>
       expect(Validator.UsernameField(1)).to.be.false);
+
+    it('should return false on object', () =>
+      expect(Validator.UsernameField({})).to.be.false);
 
     it('should return false on empty string', () =>
       expect(Validator.UsernameField('')).to.be.false);

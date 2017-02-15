@@ -14,7 +14,7 @@ class Validator {
     let staticPath = path.resolve(__dirname, '..', '..', 'static');
     let absolutePath = path.resolve(staticPath, _.trim(val, '/'));
     let pathRelativeToStatic = path.relative(staticPath, absolutePath);
-    return !_.isEmpty(pathRelativeToStatic) && !_.startsWith(pathRelativeToStatic, '..');
+    return _.isString(val) && !_.isEmpty(pathRelativeToStatic) && !_.startsWith(pathRelativeToStatic, '..');
   }
 
   /**
@@ -23,8 +23,12 @@ class Validator {
    * @return {Boolean} `true` if validation was successful, `false` otherwise.
    */
   static FileField(val) {
+    let doesFileExist;
     let file = _.get(val, _.first(_.keys(val)));
-    return _.isObject(file) && fs.statSync(file.path).isFile();
+    if (!_.isString(_.get(file, 'path'))) return false;
+    try { doesFileExist = fs.statSync(file.path).isFile() }
+    catch (err) { if (err.code !== 'ENOENT') throw err; doesFileExist = false; }
+    return doesFileExist;
   }
 
   /**
