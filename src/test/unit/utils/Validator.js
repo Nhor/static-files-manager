@@ -51,14 +51,10 @@ describe('Validator', () => {
     let pathToFile;
     let invalidPathToFile;
 
-    before('create file', done => {
-      pathToFile = path.resolve(__dirname, 'file.txt');
-      invalidPathToFile = path.resolve(__dirname, 'invalidFile.txt');
-      fs.writeFile(pathToFile, 'file\n', err => done());
+    before('define global properties', () => {
+      pathToFile = path.resolve(__dirname, '..', '..', 'fixtures', 'file.txt');
+      invalidPathToFile = path.resolve(__dirname, '..', '..', 'fixtures', 'invalidFile.txt');
     });
-
-    after('delete file', done =>
-      fs.unlink(pathToFile, err => done()));
 
     it('should return false on null', () =>
       expect(Validator.FileField(null)).to.be.false);

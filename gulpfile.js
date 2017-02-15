@@ -7,6 +7,12 @@ var spawn = require('child_process').spawn;
 var pjson = require('./package.json');
 var nodeProcess;
 
+gulp.task('copy-fixtures', function () {
+  return gulp
+    .src('./src/test/fixtures/*')
+    .pipe(gulp.dest('./dist/test/fixtures'));
+});
+
 gulp.task('configure', function () {
   return gulp
     .src(['./src/Config.js.sample', './src/Config.js'])
@@ -29,7 +35,7 @@ gulp.task('compile-js', ['configure'], function () {
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('build', ['compile-js']);
+gulp.task('build', ['copy-fixtures', 'compile-js']);
 
 gulp.task('watch', ['build'], function () {
   gulp.watch('./src/**/*', ['build']);

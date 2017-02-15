@@ -4,6 +4,7 @@ const Config = require('../../../Config');
 const Error = require('../../../utils/Error');
 const Database = require('../../../utils/Database');
 const User = require('../../../models/User');
+const Session = require('../../../models/Session');
 
 describe('Login', () => {
 
@@ -14,6 +15,7 @@ describe('Login', () => {
     let password;
     let invalidUsername;
     let invalidPassword;
+    let sessionId;
 
     before('set up global properties and create test user', () => {
       database = new Database(Config.database);
@@ -24,10 +26,11 @@ describe('Login', () => {
       return User.create(database, username, password);
     });
 
-    after('delete test user', () => {
+    after('delete test user and sessionId', () => {
       return User
         .getByUsername(database, username)
-        .then(user => User.remove(database, user.id));
+        .then(user => User.remove(database, user.id))
+        .then(() => Session.remove(database, sessionId));
     });
 
     it('should respond with validation errors for empty body', done => {
@@ -93,6 +96,7 @@ describe('Login', () => {
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(200);
         expect(body.sessionId).to.be.a('string');
+        sessionId = body.sessionId;
         done();
       });
     });

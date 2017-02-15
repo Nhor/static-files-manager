@@ -11,14 +11,13 @@ describe('Logout', () => {
   describe('POST', () => {
 
     let database;
-    let username;
+    let userId;
     let sessionId;
     let invalidSessionId;
 
     before('set up global properties and create test user and session', () => {
       database = new Database(Config.database);
-      let userId;
-      username = 'username';
+      let username = 'username';
       let password = 'password123';
       invalidSessionId = 'invalidSessionId';
       return User
@@ -32,11 +31,7 @@ describe('Logout', () => {
         .then(session => sessionId = session.id);
     });
 
-    after('delete test user', () => {
-      return User
-        .getByUsername(database, username)
-        .then(user => User.remove(database, user.id));
-    });
+    after('delete test user', () => User.remove(database, userId));
 
     it('should respond with SESSION_NOT_FOUND error for missing Session-Id header', done => {
       let options = {
