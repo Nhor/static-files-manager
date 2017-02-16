@@ -8,7 +8,7 @@ const File = require('../../../utils/File');
 const User = require('../../../models/User');
 const Session = require('../../../models/Session');
 
-describe('Create', () => {
+describe('Remove', () => {
 
   describe('POST', () => {
 
@@ -16,14 +16,16 @@ describe('Create', () => {
     let userId;
     let sessionId;
     let invalidSessionId;
+    let pathToFile;
     let pathToDirectory;
 
-    before('set up global properties and create test user and session', () => {
+    before('set up global properties and create test user, session and copy fixture file', () => {
       database = new Database(Config.database);
       let username = 'username';
       let password = 'password123';
       invalidSessionId = 'invalidSessionId';
-      pathToDirectory = path.join('path', 'to', 'directory');
+      pathToFile = path.join('path', 'to', 'file.txt');
+      pathToDirectory = path.join('path');
       return User
         .create(database, username, password)
         .then(() => User.getByUsername(database, username))
@@ -32,21 +34,23 @@ describe('Create', () => {
           return Session.create(database, Config.session, userId)
         })
         .then(() => Session.getByUserId(database, userId))
-        .then(session => sessionId = session.id);
+        .then(session => {
+          sessionId = session.id;
+          return File.copyFile(path.join('..', 'dist', 'test', 'fixtures', 'file.txt'), pathToFile);
+        });
     });
 
-    after('delete test user, session and created file', () => {
+    after('delete test user and session', () => {
       return User
         .remove(database, userId)
-        .then(() => Session.remove(database, sessionId))
-        .then(() => File.removeAtRelativePath('path'));
+        .then(() => Session.remove(database, sessionId));
     });
 
     it('should respond with validation errors for empty body', done => {
       let options = {
         json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/create`
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`
       };
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(400);
@@ -58,10 +62,10 @@ describe('Create', () => {
     it('should respond with SESSION_NOT_FOUND error for missing Session-Id header', done => {
       let options = {
         json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/create`,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
         body: {
-          path: pathToDirectory
+          path: pathToFile
         }
       };
       request(options, (err, res, body) => {
@@ -74,10 +78,10 @@ describe('Create', () => {
     it('should respond with SESSION_NOT_FOUND error for invalid Session-Id header', done => {
       let options = {
         json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/create`,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
         body: {
-          path: pathToDirectory
+          path: pathToFile
         },
         headers: {
           'Session-Id': invalidSessionId
@@ -90,11 +94,48 @@ describe('Create', () => {
       });
     });
 
-    it('should respond with success for valid data', done => {
+    it('should respond with success for valid data with file', done => {
       let options = {
         json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/create`,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
+        body: {
+          path: pathToFile
+        },
+        headers: {
+          'Session-Id': sessionId
+        }
+      };
+      request(options, (err, res, body) => {
+        expect(res.statusCode).to.equal(200);
+        done();
+      });
+    });
+
+    it('should respond with FILE_NOT_FOUND error for the same data with file', done => {
+      let options = {
+        json: true,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
+        body: {
+          path: pathToFile
+        },
+        headers: {
+          'Session-Id': sessionId
+        }
+      };
+      request(options, (err, res, body) => {
+        expect(res.statusCode).to.equal(400);
+        expect(body.err).to.have.all.members([Error.Code.FILE_NOT_FOUND]);
+        done();
+      });
+    });
+
+    it('should respond with success for valid data with directory', done => {
+      let options = {
+        json: true,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
         body: {
           path: pathToDirectory
         },
@@ -108,11 +149,11 @@ describe('Create', () => {
       });
     });
 
-    it('should respond with DIRECTORY_EXISTS error for the same data', done => {
+    it('should respond with FILE_NOT_FOUND error for the same data with directory', done => {
       let options = {
         json: true,
-        method: 'POST',
-        url: `http://localhost:${Config.port}/api/create`,
+        method: 'DELETE',
+        url: `http://localhost:${Config.port}/api/remove`,
         body: {
           path: pathToDirectory
         },
@@ -122,7 +163,7 @@ describe('Create', () => {
       };
       request(options, (err, res, body) => {
         expect(res.statusCode).to.equal(400);
-        expect(body.err).to.have.all.members([Error.Code.DIRECTORY_EXISTS]);
+        expect(body.err).to.have.all.members([Error.Code.FILE_NOT_FOUND]);
         done();
       });
     });

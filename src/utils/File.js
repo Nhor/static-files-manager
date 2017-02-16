@@ -15,8 +15,8 @@ class File {
 
   /**
    * Upload file under given path with specified filename and extension.
-   * @param {String} pathToSourceFile - Path to temporarily created source file.
-   * @param {String} pathname - Path to file (can be '').
+   * @param {String} pathToSourceFile - Absolute path to temporarily created source file.
+   * @param {String} pathname - Path to file relative to static (can be '').
    * @param {String} filename - File name.
    * @param {String} ext - File extension (can be '').
    * @return {Promise} Resolved promise on success,
@@ -37,7 +37,7 @@ class File {
 
   /**
    * Create a new directory with making sure that it doesn't exist yet.
-   * @param {String} pathname - Path to new directory.
+   * @param {String} pathname - Path to new directory relative to static.
    * @return {Promise} Resolved promise on success,
    *                   rejected promise with error on failure.
    */
@@ -75,6 +75,53 @@ class File {
         if (!stats) throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
         return this._remove(pathname);
       });
+  }
+
+  /**
+   * Copy source file to given destination.
+   * @param {String} pathToSource - Path to the source file relative to static.
+   * @param {String} pathToDestination - Destination path for the new file relative to static.
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   */
+  static copyFile(pathToSource, pathToDestination) {
+    let absSourcePath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathToSource, '/'));
+    let absDestinationPath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathToDestination, '/'));
+    let absDestinationDir = path.dirname(absDestinationPath);
+
+    return Promise
+      .all([
+        this._getStats(absSourcePath),
+        this._getStats(absDestinationPath),
+        this._getStats(absDestinationDir),
+      ])
+      .then(res => {
+        let sourceFileStats = res[0];
+        let destinationFileStats = res[1];
+        let destinationDirectoryStats = res[2];
+        if (!sourceFileStats || !sourceFileStats.isFile())
+          throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
+        if (destinationFileStats)
+          throw new Error.RecordExists(Error.Code.FILE_EXISTS);
+        return destinationDirectoryStats
+          ? undefined
+          : this._createDirectory(absDestinationDir);
+      })
+      .then(() => new Promise((resolve, reject) => {
+        let rejected = false;
+        let onError = err => {
+          if (rejected) return;
+          rejected = true;
+          reject(err);
+        };
+
+        let readStream = fs.createReadStream(absSourcePath);
+        let writeStream = fs.createWriteStream(absDestinationPath);
+        readStream.on('error', err => onError(err));
+        writeStream.on('error', err => onError(err));
+        writeStream.on('close', () => resolve());
+        readStream.pipe(writeStream);
+      }));
   }
 
   /**
@@ -127,7 +174,6 @@ class File {
    * @private
    */
   static _createDirectory(pathname) {
-    console.log(pathname);
     return new Promise((resolve, reject) =>
       mkdirp(pathname, err => err ? reject(err) : resolve()));
   }
