@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var htmlmin = require('gulp-htmlmin');
+var sass = require('gulp-sass');
 var babel = require('gulp-babel');
 var replace = require('gulp-replace');
 var uglify = require('gulp-uglify');
@@ -38,6 +39,34 @@ gulp.task('configure', function () {
 // FRONTEND //
 //////////////
 
+gulp.task('copy-front-dependencies', function () {
+  return gulp
+    .src([
+      './node_modules/react/dist/react.min.js',
+      './node_modules/react-dom/dist/react-dom.min.js',
+      './node_modules/react-router/umd/ReactRouter.min.js',
+      './node_modules/react-scrollbar/dist/scrollArea.js',
+      './node_modules/lodash/lodash.min.js'
+    ])
+    .pipe(gulp.dest('./dist/front/dependencies'));
+});
+
+gulp.task('minify-and-copy-front-dependencies', function () {
+  return gulp
+    .src([
+      './node_modules/superagent/superagent.js',
+      './node_modules/requirejs/require.js'
+    ])
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist/front/dependencies'));
+});
+
+gulp.task('copy-front-static', function () {
+  return gulp
+    .src('./src/front/static/**/*')
+    .pipe(gulp.dest('./dist/front/static'));
+});
+
 gulp.task('minify-html', function () {
   return gulp
     .src('./src/front/html/*.html')
@@ -45,6 +74,20 @@ gulp.task('minify-html', function () {
     .pipe(gulp.dest('./dist/front/html'));
 });
 
+gulp.task('compile-sass', function () {
+  return gulp
+    .src('./src/front/sass/style.scss')
+    .pipe(sass({outputStyle: 'compressed'}))
+    .pipe(gulp.dest('./dist/front/css'));
+});
+
+gulp.task('compile-jsx', ['configure'], function () {
+  return gulp
+    .src('./src/front/js/**/*.jsx')
+    .pipe(babel({presets: ['react', 'es2015']}))
+    .pipe(uglify({mangle: {except: ['require']}}))
+    .pipe(gulp.dest('./dist/front/js'));
+});
 
 ////////////
 // COMMON //
@@ -58,7 +101,16 @@ gulp.task('compile-js', ['configure'], function () {
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('build', ['copy-fixtures', 'minify-html', 'compile-js']);
+gulp.task('build', [
+  'copy-fixtures',
+  'copy-front-dependencies',
+  'minify-and-copy-front-dependencies',
+  'copy-front-static',
+  'minify-html',
+  'compile-sass',
+  'compile-jsx',
+  'compile-js'
+]);
 
 gulp.task('watch', ['build'], function () {
   gulp.watch('./src/**/*', ['build']);

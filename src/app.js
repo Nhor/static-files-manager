@@ -26,6 +26,10 @@ router.addRoute('DELETE', '/remove', Remove.DELETE, {database: database});
 server.addRouter('/api', router);
 server.addStatic('/static', 'static');
 
+server.addStatic('/front/dependencies', 'dist/front/dependencies');
+server.addStatic('/front/static', 'dist/front/static');
+server.addStatic('/front/js', 'dist/front/js');
+server.addStatic('/front/css', 'dist/front/css');
 server.addReactRouterFrontend('', 'dist/front/html/index.html');
 
 server
