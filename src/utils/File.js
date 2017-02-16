@@ -52,6 +52,39 @@ class File {
   }
 
   /**
+   * Move source file to given destination.
+   * @param {String} pathToSource - Path to the source file relative to static.
+   * @param {String} pathToDestination - Destination path for the source file relative to static.
+   * @return {Promise} Resolved promise on success,
+   *                   rejected promise with error on failure.
+   */
+  static moveFile(pathToSource, pathToDestination) {
+    let absSourcePath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathToSource, '/'));
+    let absDestinationPath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathToDestination, '/'));
+    let absDestinationDir = path.dirname(absDestinationPath);
+
+    return Promise
+      .all([
+        this._getStats(absSourcePath),
+        this._getStats(absDestinationPath),
+        this._getStats(absDestinationDir),
+      ])
+      .then(res => {
+        let sourceFileStats = res[0];
+        let destinationFileStats = res[1];
+        let destinationDirectoryStats = res[2];
+        if (!sourceFileStats || !sourceFileStats.isFile())
+          throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
+        if (destinationFileStats)
+          throw new Error.RecordExists(Error.Code.FILE_EXISTS);
+        return destinationDirectoryStats
+          ? undefined
+          : this._createDirectory(absDestinationDir);
+      })
+      .then(() => this._move(absSourcePath, absDestinationPath));
+  }
+
+  /**
    * Remove file or directory and all its content at given path relative to static.
    * @param {String} pathname - Path to file or directory relative to static.
    * @return {Promise} Resolved promise on success,

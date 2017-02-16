@@ -8,6 +8,7 @@ const Login = require('./routes/Login');
 const Logout = require('./routes/Logout');
 const Upload = require('./routes/Upload');
 const Create = require('./routes/Create');
+const Move = require('./routes/Move');
 const Remove = require('./routes/Remove');
 
 let database = new Database(Config.database);
@@ -19,6 +20,7 @@ router.addRoute('POST', '/logout', Logout.POST, {database: database});
 
 router.addRoute('POST',   '/upload', Upload.POST,   {database: database}, 'multipart');
 router.addRoute('POST',   '/create', Create.POST,   {database: database});
+router.addRoute('PUT',    '/move',   Move.PUT,      {database: database});
 router.addRoute('DELETE', '/remove', Remove.DELETE, {database: database});
 
 server.addRouter('/api', router);

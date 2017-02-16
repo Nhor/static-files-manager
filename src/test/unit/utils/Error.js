@@ -39,4 +39,14 @@ describe('Error', () => {
       expect(_.get(testCase, 'isCustom')).to.be.true;
     });
   });
+
+  describe('Code', () => {
+
+    it('each error code should be different', () => {
+      let keys = _.keys(Error.Code);
+      let values = _.values(Error.Code);
+      expect(_.uniq(keys)).to.deep.equal(keys);
+      expect(_.uniq(values)).to.deep.equal(values);
+    });
+  })
 });
