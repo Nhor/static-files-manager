@@ -36,6 +36,16 @@ class Server {
   }
 
   /**
+   * Add ReactRouter frontend.
+   * @param {String} baseUrl - Base url for the frontend site.
+   * @param {String} pathname - Path with HTML file relative to application root.
+   */
+  addReactRouterFrontend(baseUrl, pathname) {
+    this._server.get(`${baseUrl}*`, (req, res, next) =>
+      res.sendFile(path.resolve(__dirname, '..', '..', pathname)));
+  }
+
+  /**
    * Start listening.
    * @returns {Promise} Resolved promise with server `name`, `version` and `port`.
    */

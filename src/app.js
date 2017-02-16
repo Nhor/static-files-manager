@@ -26,6 +26,8 @@ router.addRoute('DELETE', '/remove', Remove.DELETE, {database: database});
 server.addRouter('/api', router);
 server.addStatic('/static', 'static');
 
+server.addReactRouterFrontend('', 'dist/front/html/index.html');
+
 server
   .listen()
   .then(params => Logger.info(`${params.name} v${params.version} server listening on http://127.0.0.1:${params.port}...`));
