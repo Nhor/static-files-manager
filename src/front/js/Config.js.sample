@@ -1,0 +1,11 @@
+define(() => {
+  let Config = {};
+
+  Config.api = {};
+  Config.api.url = 'http://127.0.0.1:8000/api';
+
+  Config.session = {};
+  Config.session.cookie = 'SID';
+
+  return Config;
+});

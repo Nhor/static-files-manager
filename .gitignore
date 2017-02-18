@@ -52,8 +52,9 @@ jspm_packages
 # SQLite3 database
 database.db
 
-# Configuration file
+# Configuration files
 src/Config.js
+src/front/js/Config.js
 
 # Build
 dist

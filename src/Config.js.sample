@@ -10,4 +10,6 @@ Config.session = {};
 Config.session.type = 'AUTH';
 Config.session.realm = 'www.domain.com';
 
+Config.allowedOrigins = ['*'];
+
 module.exports = Config;

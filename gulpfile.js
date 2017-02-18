@@ -97,7 +97,7 @@ gulp.task('compile-js', ['configure'], function () {
   return gulp
     .src('./src/**/*.js')
     .pipe(babel({presets: ['es2015']}))
-    .pipe(uglify())
+    .pipe(uglify({mangle: {except: ['require']}}))
     .pipe(gulp.dest('./dist'));
 });
 

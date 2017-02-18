@@ -35,7 +35,12 @@
     'reactScrollbar',
     'lodash',
     'superagent',
+    './Config',
+    './Cookie',
+    './Request',
+    './Authentication',
     './App',
+    './components/Login',
     './components/Home',
     './components/Router'
   ], (
@@ -45,7 +50,12 @@
     ScrollArea,
     _,
     request,
+    Config,
+    Cookie,
+    Request,
+    Authentication,
     App,
+    Login,
     Home,
     Router
   ) => App.init());

@@ -1,6 +1,7 @@
 const path = require('path');
 const _ = require('lodash');
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const multiparty = require('multiparty');
 const Logger = require('./Logger');
@@ -9,9 +10,16 @@ class Router {
 
   /**
    * Handle class instance creation.
+   * @param {Array} allowedOrigins - Array containing allowed origins for CORS.
    */
-  constructor() {
+  constructor(allowedOrigins) {
     this._router = express.Router();
+    this._corsMiddleware = cors({origin: (origin, callback) => {
+      let isOriginAllowed =
+        _.includes(allowedOrigins, '*') ||
+        _.includes(allowedOrigins, origin);
+      callback(isOriginAllowed ? null : 'Bad Request', isOriginAllowed);
+    }});
     this.jsonMiddleware = bodyParser.json();
   }
 
@@ -27,6 +35,7 @@ class Router {
   addRoute(method, path, handler, context = {}, middleware = 'json') {
     this._router[method.toLowerCase()](
       path,
+      this._corsMiddleware,
       this._createBindContextMiddleware(context),
       this[`${middleware}Middleware`],
       this._incomingRequestLogMiddleware,
@@ -117,7 +126,6 @@ class Router {
     res.status(res.locals.status);
     res.type(res.locals.type);
     res.send(res.locals.body);
-    next();
   }
 }
 

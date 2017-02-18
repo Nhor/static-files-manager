@@ -6,6 +6,7 @@ const Router = require('./utils/Router');
 const Server = require('./utils/Server');
 const Login = require('./routes/Login');
 const Logout = require('./routes/Logout');
+const Check = require('./routes/Check');
 const Upload = require('./routes/Upload');
 const Create = require('./routes/Create');
 const Move = require('./routes/Move');
@@ -13,9 +14,10 @@ const Remove = require('./routes/Remove');
 
 let database = new Database(Config.database);
 let server = new Server(Config.name, Config.version, Config.port);
-let router = new Router();
+let router = new Router(Config.allowedOrigins);
 
 router.addRoute('POST', '/login',  Login.POST,  {database: database, sessionProps: Config.session});
+router.addRoute('GET',  '/check',  Check.GET,   {database: database});
 router.addRoute('POST', '/logout', Logout.POST, {database: database});
 
 router.addRoute('POST',   '/upload', Upload.POST,   {database: database}, 'multipart');
