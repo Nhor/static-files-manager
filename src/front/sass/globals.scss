@@ -1,3 +1,4 @@
+@import 'utils';
 @import 'vars';
 
 html,
@@ -6,4 +7,52 @@ body {
   padding: 0;
   height: 100%;
   cursor: default;
+  font-family: IndieFlower, sans-serif;
+  font-size: $font-size-m;
+  background-color: $background-color;
+  color: $primary-font-color-dark;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.input {
+  color: $input-font-color;
+  background-color: $input-background-color;
+  border: 1px solid;
+  border-color:
+    $input-border-color-top-left
+    $input-border-color-bottom-right
+    $input-border-color-bottom-right
+    $input-border-color-top-left;
+  outline: none;
+  box-shadow: none;
+  @include transition(all .2s ease-in-out 0s);
+
+  &:hover {
+    background-color: $input-background-color-hover;
+  }
+  &:focus {
+    background-color: $input-background-color-focus;
+    box-shadow: $input-box-shadow-focus;
+  }
+}
+
+.button {
+  color: $button-font-color;
+  background-color: $button-background-color;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: $button-box-shadow;
+  @include transition(background-color .2s ease-in-out 0s);
+
+  &:hover, &:focus {
+    background-color: $button-background-color-hover;
+  }
+  &:active {
+    background-color: $button-background-color-active;
+    @include transition(background-color 1ms ease-in-out 0s);
+  }
 }
