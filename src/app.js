@@ -4,10 +4,11 @@ const Logger = require('./utils/Logger');
 const Database = require('./utils/Database');
 const Router = require('./utils/Router');
 const Server = require('./utils/Server');
+const ErrorCode = require('./routes/ErrorCode');
 const Login = require('./routes/Login');
 const Logout = require('./routes/Logout');
 const Check = require('./routes/Check');
-const ErrorCode = require('./routes/ErrorCode');
+const List = require('./routes/List');
 const Upload = require('./routes/Upload');
 const Create = require('./routes/Create');
 const Move = require('./routes/Move');
@@ -23,6 +24,7 @@ router.addRoute('POST', '/login',  Login.POST,  {database: database, sessionProp
 router.addRoute('GET',  '/check',  Check.GET,   {database: database});
 router.addRoute('POST', '/logout', Logout.POST, {database: database});
 
+router.addRoute('GET',    '/list/*', List.GET,      {database: database});
 router.addRoute('POST',   '/upload', Upload.POST,   {database: database}, 'multipart');
 router.addRoute('POST',   '/create', Create.POST,   {database: database});
 router.addRoute('PUT',    '/move',   Move.PUT,      {database: database});

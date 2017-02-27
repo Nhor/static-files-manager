@@ -18,6 +18,18 @@ class Validator {
   }
 
   /**
+   * Check if value is valid path for directory relative to static.
+   * @param {any} val - Value to validate.
+   * @return {Boolean} `true` if validation was successful, `false` otherwise.
+   */
+  static DirectoryPathRelativeToStaticField(val) {
+    let staticPath = path.resolve(__dirname, '..', '..', 'static');
+    let absolutePath = path.resolve(staticPath, _.trim(val, '/'));
+    let pathRelativeToStatic = path.relative(staticPath, absolutePath);
+    return _.isString(val) && !_.startsWith(pathRelativeToStatic, '..');
+  }
+
+  /**
    * Check if value is valid file.
    * @param {any} val - Value to validate.
    * @return {Boolean} `true` if validation was successful, `false` otherwise.

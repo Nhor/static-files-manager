@@ -14,6 +14,36 @@ catch (err) { if (err.code !== 'EEXIST') throw err; }
 class File {
 
   /**
+   * List directory content at given path.
+   * @param {String} pathname - Path to directory relative to static (can be '').
+   * @return {Promise} Resolved promise with directory content on success,
+   *                   rejected promise with error on failure.
+   */
+  static listDirectory(pathname) {
+    let directoryContentNames;
+    let absolutePath = path.resolve(__dirname, '..', '..', 'static', _.trim(pathname, '/'));
+    return this
+      ._getStats(absolutePath)
+      .then(stats => {
+        if (!stats || !stats.isDirectory())
+          throw new Error.RecordDoesNotExist(Error.Code.FILE_NOT_FOUND);
+        return this._list(absolutePath);
+      })
+      .then(directoryContent => {
+        directoryContentNames = directoryContent;
+        return Promise.all(_
+          .chain(directoryContent)
+          .map(fileName => path.join(absolutePath, fileName))
+          .map(pathToFile => this._getStats(pathToFile))
+          .value());
+      })
+      .then(directoryContentStats => _.map(directoryContentStats, (fileStats, index) => ({
+        name: directoryContentNames[index],
+        type: fileStats.isFile() ? 'file' : 'directory'
+      })));
+  }
+
+  /**
    * Upload file under given path with specified filename and extension.
    * @param {String} pathToSourceFile - Absolute path to temporarily created source file.
    * @param {String} pathname - Path to file relative to static (can be '').
@@ -197,6 +227,18 @@ class File {
   static _getStats(pathname) {
     return new Promise((resolve, reject) =>
       fs.stat(pathname, (err, stats) => (err && err.code !== 'ENOENT') ? reject(err) : resolve(stats)));
+  }
+
+  /**
+   * List directory content.
+   * @param {String} pathname - Path to directory.
+   * @return {Promise} Resolved promise with object with directory content on success,
+   *                   rejected promise with error on failure.
+   * @private
+   */
+  static _list(pathname) {
+    return new Promise((resolve, reject) =>
+      fs.readdir(pathname, (err, directoryContent) => err ? reject(err) : resolve(directoryContent)));
   }
 
   /**
