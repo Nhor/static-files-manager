@@ -56,14 +56,15 @@ define(require => {
       if (authenticationRequired)
         ajax.set('Session-Id', Cookie.get(Config.session.cookie) || '');
 
-      ajax.set('Content-Type', contentType);
-
       switch (contentType) {
         case this.ContentType.json:
           ajax.send(data);
           break;
         case this.ContentType.multipart:
-          _.each(data, (value, key) => ajax.attach(key, value));
+          _.each(data, (value, key) => {
+            let attachOrField = key === 'files' ? 'attach' : 'field';
+            ajax[attachOrField](key, value);
+          });
           break;
       }
 

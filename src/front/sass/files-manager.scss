@@ -11,7 +11,8 @@
   margin-bottom: 15px;
 }
 
-.files-manager-directory-content-row {
+.files-manager-directory-content-row,
+.files-manager-upload-wrapper {
   width: calc(100% - 10px);
   height: $files-manager-directory-content-row-height;
   line-height: $files-manager-directory-content-row-height;
@@ -24,14 +25,19 @@
   }
 }
 
-.files-manager-directory-content-filename {
+.files-manager-upload-wrapper {
+  margin-top: 15px;
+}
+
+.files-manager-directory-content-filename,
+.files-manager-upload-text {
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
   margin-left: 5px;
 }
 
-%files-manager-directory-content-icon {
+%files-manager-icon {
   display: inline-block;
   vertical-align: middle;
   width: $files-manager-directory-content-row-height;
@@ -41,11 +47,16 @@
 }
 
 .files-manager-directory-content-icon-directory {
-  @extend %files-manager-directory-content-icon;
+  @extend %files-manager-icon;
   background-image: $files-manager-directory-content-icon-directory;
 }
 
 .files-manager-directory-content-icon-file {
-  @extend %files-manager-directory-content-icon;
+  @extend %files-manager-icon;
   background-image: $files-manager-directory-content-icon-file;
+}
+
+.files-manager-upload-icon-upload {
+  @extend %files-manager-icon;
+  background-image: $files-manager-upload-icon-upload;
 }

@@ -65,6 +65,7 @@ define(require => {
         currentDirectoryContent: []
       };
       this._updateDirectoryAndItsContent = this._updateDirectoryAndItsContent.bind(this);
+      this._onUploadWrapperClick = this._onUploadWrapperClick.bind(this);
     }
 
     /**
@@ -100,6 +101,32 @@ define(require => {
     }
 
     /**
+     * Handle upload wrapper click.
+     * @param {Event} event - Event object.
+     * @private
+     */
+    _onUploadWrapperClick(event) {
+      let inputElement = document.createElement('input');
+      inputElement.type = 'file';
+      inputElement.multiple = false;
+
+      inputElement.onchange = () => {
+        let file = _.first(inputElement.files);
+        let data = {
+          path: _.trimStart(this.state.currentDirectory, '.'),
+          filename: _.kebabCase(_.dropRight(_.split(file.name, '.')).join('')),
+          ext: _.toLower(_.last(_.split(file.name, '.'))),
+          files: file
+        };
+        Request
+          .post('/upload', true, data, Request.ContentType.multipart)
+          .then(res => this._updateDirectoryAndItsContent(this.state.currentDirectory));
+      };
+
+      inputElement.click();
+    }
+
+    /**
      * Render component.
      * @returns {Object} Component DOM representation.
      */
@@ -108,6 +135,7 @@ define(require => {
         <div className="files-manager-wrapper">
           <div className="container">
             <div className="files-manager-directory-name">{`${this.state.currentDirectory}/`}</div>
+
             {this.state.currentDirectory !== '.'
               ? <ContentNode type='directory'
                              name='..'
@@ -119,6 +147,12 @@ define(require => {
                            name={file.name}
                            parent-directory={this.state.currentDirectory}
                            update-directory-function={this._updateDirectoryAndItsContent} />)}
+
+            <div className="files-manager-upload-wrapper"
+                 onClick={this._onUploadWrapperClick}>
+              <div className="files-manager-upload-icon-upload" />
+              <div className="files-manager-upload-text">Upload</div>
+            </div>
           </div>
         </div>
       );
