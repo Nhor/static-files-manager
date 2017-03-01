@@ -4,7 +4,7 @@ define(require => {
   let ReactRouter = require('reactRouter');
   let Authentication = require('../Authentication');
   let Login = require('./Login');
-  let Home = require('./Home');
+  let FilesManager = require('./FilesManager');
 
   let checkIfAuthenticated = (nextState, replace, callback) => {
     if (!Authentication.getSessionId()) {
@@ -24,7 +24,7 @@ define(require => {
     (
       <ReactRouter.Router history={ReactRouter.browserHistory}>
         <ReactRouter.Route path="/login" component={Login} />
-        <ReactRouter.Route path="/" component={Home} onEnter={checkIfAuthenticated} />
+        <ReactRouter.Route path="/" component={FilesManager} onEnter={checkIfAuthenticated} />
       </ReactRouter.Router>
     ),
     document.body

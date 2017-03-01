@@ -42,7 +42,7 @@
     './Authentication',
     './App',
     './components/Login',
-    './components/Home',
+    './components/FilesManager',
     './components/Router'
   ], (
     React,
@@ -58,7 +58,7 @@
     Authentication,
     App,
     Login,
-    Home,
+    FilesManager,
     Router
   ) => App.init());
 })();

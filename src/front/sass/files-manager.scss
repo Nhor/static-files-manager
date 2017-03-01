@@ -1,0 +1,51 @@
+@import 'utils';
+@import 'vars';
+
+.files-manager-wrapper {
+  padding: 15px 0;
+}
+
+.files-manager-directory-name {
+  font-size: $font-size-l;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
+
+.files-manager-directory-content-row {
+  width: calc(100% - 10px);
+  height: $files-manager-directory-content-row-height;
+  line-height: $files-manager-directory-content-row-height;
+  padding: 5px;
+  @include transition(background-color .3s ease-in-out 0s);
+
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .2);
+  }
+}
+
+.files-manager-directory-content-filename {
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  margin-left: 5px;
+}
+
+%files-manager-directory-content-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: $files-manager-directory-content-row-height;
+  height: 100%;
+  background: transparent no-repeat 0 0;
+  background-size: 100% 100%;
+}
+
+.files-manager-directory-content-icon-directory {
+  @extend %files-manager-directory-content-icon;
+  background-image: $files-manager-directory-content-icon-directory;
+}
+
+.files-manager-directory-content-icon-file {
+  @extend %files-manager-directory-content-icon;
+  background-image: $files-manager-directory-content-icon-file;
+}

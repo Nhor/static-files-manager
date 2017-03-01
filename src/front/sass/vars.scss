@@ -27,3 +27,11 @@ $login-form-field-height: 40px;
 $login-form-field-error-tooltip-background: rgba($primary-font-color-dark, .8);
 $login-form-field-icon-size: $login-form-field-height;
 $login-form-field-icon-cross: url('../static/img/icon-cross.svg');
+
+$files-manager-directory-content-row-height: 25px;
+$files-manager-directory-content-icon-add-directory: url('../static/img/icon-add-directory.svg');
+$files-manager-directory-content-icon-bin: url('../static/img/icon-bin.svg');
+$files-manager-directory-content-icon-directory: url('../static/img/icon-directory.svg');
+$files-manager-directory-content-icon-download: url('../static/img/icon-download.svg');
+$files-manager-directory-content-icon-file: url('../static/img/icon-file.svg');
+$files-manager-directory-content-icon-upload: url('../static/img/icon-upload.svg');

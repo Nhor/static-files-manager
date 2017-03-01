@@ -14,6 +14,15 @@ define(require => {
     }
 
     /**
+     * Get a static file from static files server.
+     * @param {String} path - Relative path to a static file.
+     */
+    static getStatic(path) {
+      let tab = window.open(`${Config.static.url}${path}`, '_blank');
+      tab.focus();
+    }
+
+    /**
      * Perform a GET HTTP request.
      * @param {String} path - HTTP request path.
      * @param {Boolean} authenticationRequired - Include Session-Id header or not.
