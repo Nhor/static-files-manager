@@ -12,7 +12,8 @@
 }
 
 .files-manager-directory-content-row,
-.files-manager-upload-wrapper {
+.files-manager-upload-wrapper,
+.files-manager-create-directory-wrapper {
   width: calc(100% - 10px);
   height: $files-manager-directory-content-row-height;
   line-height: $files-manager-directory-content-row-height;
@@ -30,7 +31,8 @@
 }
 
 .files-manager-directory-content-filename,
-.files-manager-upload-text {
+.files-manager-upload-text,
+.files-manager-create-directory-text {
   display: inline-block;
   vertical-align: middle;
   white-space: nowrap;
@@ -59,4 +61,59 @@
 .files-manager-upload-icon-upload {
   @extend %files-manager-icon;
   background-image: $files-manager-upload-icon-upload;
+}
+
+.files-manager-create-directory-icon-add-directory {
+  @extend %files-manager-icon;
+  background-image: $files-manager-create-directory-icon-add-directory;
+}
+
+.files-manager-dialog-window-wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .6);
+  text-align: center;
+}
+
+.files-manager-dialog-window-aligner {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0;
+  height: 100%;
+}
+
+.files-manager-dialog-window {
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: border-box;
+  padding: 45px;
+  background-color: $background-color;
+}
+
+.files-manager-create-directory-dialog {
+  width: 100%;
+}
+
+.files-manager-create-directory-dialog-input {
+  width: 100%;
+  height: 30px;
+}
+
+.files-manager-create-directory-dialog-button {
+  width: 45%;
+  height: 30px;
+  margin-top: 30px;
+
+  &:last-child {
+    margin-left: 10%;
+  }
+}
+
+@media (min-width: 768px) {
+  .files-manager-create-directory-dialog {
+    width: 480px;
+  }
 }

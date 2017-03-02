@@ -1,7 +1,26 @@
 define(require => {
   let React = require('react');
+  let ReactDOM = require('reactDom');
   let _ = require('lodash');
   let Request = require('../Request');
+
+  class DialogWindow extends React.Component {
+
+    /**
+     * Render component.
+     * @returns {Object} Component DOM representation.
+     */
+    render() {
+      return (
+        <div className="files-manager-dialog-window-wrapper">
+          <div className="files-manager-dialog-window-aligner" />
+            <div className="files-manager-dialog-window">
+              {this.props.children}
+            </div>
+        </div>
+      );
+    }
+  }
 
   class ContentNode extends React.Component {
 
@@ -62,10 +81,12 @@ define(require => {
       super(props);
       this.state = {
         currentDirectory: '.',
-        currentDirectoryContent: []
+        currentDirectoryContent: [],
+        dialogWindowShown: false
       };
       this._updateDirectoryAndItsContent = this._updateDirectoryAndItsContent.bind(this);
       this._onUploadWrapperClick = this._onUploadWrapperClick.bind(this);
+      this._onCreateDirectoryWrapperClick = this._onCreateDirectoryWrapperClick.bind(this);
     }
 
     /**
@@ -127,12 +148,77 @@ define(require => {
     }
 
     /**
+     * Handle create directory wrapper click.
+     * @param {Event} event - Event object.
+     * @private
+     */
+    _onCreateDirectoryWrapperClick(event) {
+      let inputValue = '';
+
+      let onInputChange = e => inputValue = e.target.value;
+
+      let onCloseButtonClick = () => this._hideDialogWindow();
+
+      let onCreateButtonClick = () => {
+        let data = {
+          path: `${_.trimStart(this.state.currentDirectory, '.')}/${inputValue}`
+        };
+        Request
+          .post('/create', true, data)
+          .then(() => this._updateDirectoryAndItsContent(this.state.currentDirectory))
+          .then(() => this._hideDialogWindow())
+          .catch(() => this._hideDialogWindow());
+      };
+
+      this._showDialogWindow(
+        <div className="files-manager-create-directory-dialog">
+          <input className="input files-manager-create-directory-dialog-input"
+                 type="text"
+                 onChange={onInputChange}/>
+          <input className="button files-manager-create-directory-dialog-button"
+                 value="Create"
+                 type="submit"
+                 onClick={onCreateButtonClick}/>
+          <input className="button files-manager-create-directory-dialog-button"
+                 value="Close"
+                 type="submit"
+                 onClick={onCloseButtonClick}/>
+        </div>
+      );
+    }
+
+    /**
+     * Show dialog window with given HTML content.
+     * @param {Object} content - Object with HTML content.
+     * @private
+     */
+    _showDialogWindow(content) {
+      ReactDOM.render(
+        <DialogWindow>{content}</DialogWindow>,
+        _.first(document.getElementsByClassName('files-manager-dialog-window-container'))
+      );
+      this.setState({dialogWindowShown: true});
+    }
+
+    /**
+     * Hide dialog window.
+     * @private
+     */
+    _hideDialogWindow() {
+      ReactDOM.unmountComponentAtNode(
+        _.first(document.getElementsByClassName('files-manager-dialog-window-container'))
+      );
+      this.setState({dialogWindowShown: false});
+    }
+
+    /**
      * Render component.
      * @returns {Object} Component DOM representation.
      */
     render() {
       return (
         <div className="files-manager-wrapper">
+          <div className="files-manager-dialog-window-container" />
           <div className="container">
             <div className="files-manager-directory-name">{`${this.state.currentDirectory}/`}</div>
 
@@ -152,6 +238,12 @@ define(require => {
                  onClick={this._onUploadWrapperClick}>
               <div className="files-manager-upload-icon-upload" />
               <div className="files-manager-upload-text">Upload</div>
+            </div>
+
+            <div className="files-manager-create-directory-wrapper"
+                 onClick={this._onCreateDirectoryWrapperClick}>
+              <div className="files-manager-create-directory-icon-add-directory" />
+              <div className="files-manager-create-directory-text">Create directory</div>
             </div>
           </div>
         </div>
