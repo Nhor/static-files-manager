@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PARENT_PATH=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
+
+docker build -t static_files_manager $PARENT_PATH
+docker run --name static -d -p 8000:8000 static_files_manager pm2-docker start /root/static-files-manager/dist/app.js

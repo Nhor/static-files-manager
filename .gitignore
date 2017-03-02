@@ -60,5 +60,9 @@ src/front/js/Config.js
 dist
 
 # Static files
-tmp
-static
+/tmp
+/static
+
+# Production Docker files
+docker/build.sh
+docker/Dockerfile

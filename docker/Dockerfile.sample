@@ -1,0 +1,44 @@
+FROM ubuntu:16.10
+
+# PORT EXPOSITION
+EXPOSE 8000
+
+# ENVIRONMENT PREPARATION
+RUN apt-get update
+RUN apt-get -y upgrade
+RUN apt-get install -y curl
+RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+RUN apt-get install -y sqlite3 nodejs build-essential g++ gyp git
+RUN npm install -g pm2 gulp
+
+# REPOSITORY CLONING
+WORKDIR /root
+RUN git clone https://github.com/Nhor/static-files-manager.git
+RUN chmod +x static-files-manager/migrations/migrate.sh
+
+# PROJECT BACKEND CONFIGURATION
+WORKDIR /root/static-files-manager/src
+RUN cp Config.js.sample Config.js
+RUN sed -i -E "s/Config.port(.*)/Config.port = 8000;/g" Config.js
+RUN sed -i -E "s/Config.database(.*)/Config.database = 'database.db';/g" Config.js
+RUN sed -i -E "s/Config.session.type(.*)/Config.session.type = 'AUTH';/g" Config.js
+RUN sed -i -E "s/Config.session.realm(.*)/Config.session.realm = 'www.domain.com';/g" Config.js
+RUN sed -i -E "s/Config.allowedOrigins(.*)/Config.allowedOrigins = ['www.domain.com'];/g" Config.js
+
+# PROJECT FRONTEND CONFIGURATION
+WORKDIR /root/static-files-manager/src/front/js
+RUN cp Config.js.sample Config.js
+RUN sed -i -E "s/Config.api.url(.*)/Config.api.url = 'http:\/\/www.domain.com\/api';/g" Config.js
+RUN sed -i -E "s/Config.static.url(.*)/Config.static.url = 'http:\/\/www.domain.com\/static';/g" Config.js
+RUN sed -i -E "s/Config.session.cookie(.*)/Config.session.cookie = 'SID';/g" Config.js
+
+# PROJECT BUILD
+WORKDIR /root/static-files-manager
+RUN touch database.db
+RUN migrations/migrate.sh
+RUN npm install
+RUN gulp build
+
+# USER CREATION
+WORKDIR /root/static-files-manager/dist
+RUN node -e "let Database = require('./utils/Database'); let User = require('./models/User'); let database = new Database('database.db'); User.create(database, 'username', 'password123')"
